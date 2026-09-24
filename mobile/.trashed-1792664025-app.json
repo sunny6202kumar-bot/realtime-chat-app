@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Real-time Chat",
+    "slug": "realtime-chat",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "android": {
+      "package": "com.example.realtimechat",
+      "permissions": [
+        "INTERNET"
+      ]
+    },
+    "description": "Lightweight real-time messaging app",
+    "scheme": "realtimechat"
+  }
+}
