@@ -11,6 +11,14 @@
       ]
     },
     "description": "Lightweight real-time messaging app",
-    "scheme": "realtimechat"
+    "scheme": "realtimechat",
+    "extra": {
+      "eas": {
+        "projectId": "2f30df52-7a8d-4316-9310-07b60e03dfac"
+      }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

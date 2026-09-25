@@ -97,7 +97,7 @@ app.get("/api/users", auth, async (req, res) => {
     where: { id: { not: me } },
     select: { id: true, displayName: true, email: true, avatarUrl: true }
   });
-  res.json(users.map(u => ({ ...u, online: online.has(u.id) })));
+  res.json(users.map((u: any) => ({ ...u, online: online.has(u.id) })));
 });
 
 app.get("/api/conversations", auth, async (req, res) => {
@@ -113,8 +113,8 @@ app.get("/api/conversations", auth, async (req, res) => {
       }
     },
   });
-  const result = memberships.map(m => {
-    const other = m.conversation.members.find(x => x.userId !== userId)?.user;
+  const result = memberships.map((m: any) => {
+    const other = m.conversation.members.find((x: any) => x.userId !== userId)?.user;
     const last = m.conversation.messages[0];
     return {
       id: m.conversation.id,
@@ -124,7 +124,7 @@ app.get("/api/conversations", auth, async (req, res) => {
         createdAt: last.createdAt, senderId: last.senderId, status: last.status
       } : null
     };
-  }).filter(x => x.user);
+  }).filter((x: any) => x.user);
   res.json(result);
 });
 
@@ -155,7 +155,7 @@ async function isMember(conversationId: string, userId: string) {
 
 app.get("/api/conversations/:id/messages", auth, async (req, res) => {
   const userId = (req as any).userId;
-  const conversationId = req.params.id;
+  const conversationId = String(req.params.id);
   const take = Math.min(Math.max(Number(req.query.limit) || 30, 1), 100);
   const before = req.query.before ? new Date(String(req.query.before)) : undefined;
   if (before && Number.isNaN(before.getTime())) return res.status(400).json({ error: "Invalid before cursor" });
@@ -174,7 +174,7 @@ app.get("/api/conversations/:id/messages", auth, async (req, res) => {
 
 app.post("/api/conversations/:id/messages", auth, async (req, res) => {
   const senderId = (req as any).userId;
-  const conversationId = req.params.id;
+  const conversationId = String(req.params.id);
   if (!(await isMember(conversationId, senderId))) return res.status(403).json({ error: "Not a member" });
   const parsed = messageSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "Invalid message" });
