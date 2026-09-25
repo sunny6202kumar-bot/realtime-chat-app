@@ -213,7 +213,7 @@ app.post("/api/uploads", auth, upload.single("file"), async (req, res) => {
 
 app.post("/api/messages/:id/read", auth, async (req, res) => {
   const userId = (req as any).userId;
-  const message = await prisma.message.findUnique({ where: { id: req.params.id } });
+  const message = await prisma.message.findUnique({ where: { id: String(req.params.id) } });
   if (!message || !(await isMember(message.conversationId, userId))) return res.status(404).json({ error: "Message not found" });
   if (message.senderId === userId) return res.json(message);
   const updated = await prisma.message.update({ where: { id: message.id }, data: { status: "READ" } });
