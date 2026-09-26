@@ -42,8 +42,12 @@ const messageSchema = z.object({
 app.get("/health", (_req, res) => res.json({ ok: true, onlineUsers: online.size }));
 
 app.post("/api/auth/register", async (req, res) => {
+  const parsed = registerSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: "Invalid registration data", details: parsed.error.issues });
+  }
   try {
-    const data = registerSchema.parse(req.body);
+    const data = parsed.data;
     const exists = await prisma.user.findUnique({ where: { email: data.email } });
     if (exists) return res.status(409).json({ error: "Email already registered" });
     const user = await prisma.user.create({
@@ -51,11 +55,11 @@ app.post("/api/auth/register", async (req, res) => {
       select: { id: true, email: true, displayName: true, avatarUrl: true }
     });
     res.json({ token: signUser(user.id), user });
-  } catch {
-    res.status(400).json({ error: "Invalid registration data" });
+  } catch (err) {
+    console.error("REGISTER_ERROR", err);
+    res.status(500).json({ error: "Registration failed" });
   }
 });
-
 app.post("/api/auth/guest", async (_req, res) => {
   const suffix = Math.random().toString(36).slice(2, 8);
   const user = await prisma.user.create({
